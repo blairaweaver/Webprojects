@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Links to CSS file -->
+    <link
+    rel="stylesheet"
+    type="text/css"
+    href="invoicestyle.css"
+    >
+    <meta charset="UTF-8">
+    <title>Invoice</title>
+</head>
+<body>
+<?php date_default_timezone_set("America/New_York");?>
+<!-- Header -->
+<h1>Invoice</h1>
+
+<!-- Customer Info in Top Left -->
+<p>
+    Tom Lee<br/>
+    321 Appleseed Street<br/>
+    Appleville, NC 53719<br/>
+    <br/>
+    Phone: (555) 555-5555<br/>
+</p>
+<h2>INVOICE</h2>
+
+<!-- Overview talbe with Date, Amount, and Invoice # -->
+<table id="overview">
+    <tr>
+        <th>Invoice #</th>
+        <td class="overtd">000123</td>
+    </tr>
+    <tr>
+        <th>Date</th>
+        <?php
+        echo '<td class="overtd">';
+        echo date('jS F Y');
+        echo "</td>";
+        ?>
+    </tr>
+    <tr>
+        <th>Amount Due</th>
+        <td class="overtd" name="total">$0.00</td>
+    </tr>
+</table>
+<br/>
+
+<!--The invoice form which is submitted to the php file-->
+<form method="post" id="orderform" action="../php/Thank_You.php" onsubmit="return validateForm()">
+    <input value="Save Form to File" type="submit" />
+<!-- Table with order information -->
+    <table id="order">
+        <!--Table Header-->
+        <tr>
+            <th name="delete"></th>
+            <th name="item">Item</th>
+            <th name="description">Description</th>
+            <th name="unit">Unit Cost</th>
+            <th name="quantity">Quantity</th>
+            <th name="price">Price</th>
+        </tr>
+        <!--Table start off with an empty row for -->
+        <tr>
+            <td><input type="button" value="delete" onclick="deleteRow(this)"/></td>
+            <td><input size="40" maxlength="40" data-name="item"        name="rows[1][item]" type="text" /></td>
+            <td><input size="40" maxlength="40" data-name="description" name="rows[1][description]" type="text" /></td>
+            <td><input size="10" maxlength="40" data-name="uc"          name="rows[1][uc]" type="number" step="0.01" min="0"/></td>
+            <td><input size="10" maxlength="40" data-name="quantity"    name="rows[1][quantity]" type="number" min="0"/></td>
+            <td>$0.00</td>
+        </tr>
+    </table>
+
+</form>
+
+<!--Table to display order totals, which is updated with everything else-->
+<table id="ordertotal">
+    <tr>
+        <th>Subtotal</th>
+        <td class="overtd">$0.00</td>
+    </tr>
+    <tr>
+        <th>Total</th>
+        <td class="overtd">$0.00</td>
+    </tr>
+    <tr>
+        <th>Amount Paid</th>
+        <td class="overtd" name="total">$0.00</td>
+    </tr>
+</table>
+
+<!--Buttons to use javascript functions-->
+<button onclick="addRow()">Add Row</button>
+<button onclick="updateForm()">Update Form</button>
+<button onclick="location.href='../php/View_Orders.php'">View Invoices from File</button>
+<button>Save to Database</button>
+<button>View Invoices from Database</button>
+
+
+<!-- Script to add rows to table -->
+<script>
+    function addRow() {
+        //set order table to table
+        var table = document.getElementById("order");
+
+        //insert row at last position and get row index
+        var row = table.insertRow(-1);
+        var i = row.rowIndex;
+
+        //add cells to row
+        var cell0 = row.insertCell(0);
+        var cell1 = row.insertCell(1);
+        var cell2 = row.insertCell(2);
+        var cell3 = row.insertCell(3);
+        var cell4 = row.insertCell(4);
+        var cell5 = row.insertCell(5);
+
+        //add content to cells of table
+        cell0.innerHTML = '<input type="button" value="delete" onclick="deleteRow(this)"/>';
+        cell1.innerHTML = '<input size="40" maxlength="40" data-name="item"        name="rows['+i+'][item]" type="text" />';
+        cell2.innerHTML = '<input size="40" maxlength="40" data-name="description" name="rows['+i+'][description]" type="text" />';
+        cell3.innerHTML = '<input size="10" maxlength="40" data-name="uc"          name="rows['+i+'][uc]" type="number" step="0.01" min="0"/>';
+        cell4.innerHTML = '<input size="10" maxlength="40" data-name="quantity"    name="rows['+i+'][quantity]" type="number" min="0"/>';
+        cell5.innerHTML = '$0.00';
+
+    }
+</script>
+
+<!-- Script to delete rows from table -->
+<script>
+    function deleteRow(r) {
+        // get row id from table
+        var i = r.parentNode.parentNode.rowIndex;
+        // use index to delete row
+        document.getElementById("order").deleteRow(i);
+    }
+</script>
+
+<!-- Script to update price totals in tables -->
+<script>
+    function updateForm() {
+        //set table variable by id
+        var table = document.getElementById("order");
+        //get the number of rows in table
+        var count = table.getElementsByTagName("tr").length;
+        //check to make sure there are rows
+
+        if (count > 0)
+        {
+            //set total and price initial to 0
+            var price = 0;
+            var total = 0;
+            //loop through rows, not including header
+            for(var i = 1; i < count; i++)
+            {
+                //calculate total from unit cost and quantity
+                price = table.rows[i].cells[3].children[0].value * table.rows[i].cells[4].children[0].value;
+                //add price to total
+                total += price;
+                //put price in price column
+                table.rows[i].cells[5].innerHTML = '$'+ price.toFixed(2);
+            }
+            //put oder total into appropriate places
+            document.getElementById("overview").rows[2].cells[1].innerHTML = "$"+ total.toFixed(2);
+            document.getElementById("ordertotal").rows[0].cells[1].innerHTML = "$"+ total.toFixed(2);
+            document.getElementById("ordertotal").rows[1].cells[1].innerHTML = "$"+ total.toFixed(2);
+        }
+    }
+</script>
+
+<!--Script to check input values-->
+<script>
+    function validateForm() {
+
+        //set table variable by id
+        var table = document.getElementById("order");
+
+        //get the number of rows in table
+        var count = table.getElementsByTagName("tr").length;
+
+        if (count == 1) {
+            alert("Please add rows to table and enter data");
+            return false;
+        }
+        else
+        {
+            //loop through rows, not including header
+            for(var i = 1; i < count; i++)
+            {
+                var item = table.rows[i].cells[1].children[0].value;
+                var description = table.rows[i].cells[1].children[0].value;
+                var uc = table.rows[i].cells[1].children[0].value;
+                var quantity = table.rows[i].cells[1].children[0].value;
+
+                //check to make sure all fields are filled in
+                if (item == "" || description == "" || uc == "" || quantity == "") {
+                    var j = i + 1;
+                    alert("Please finish filling in the table. Error at row " + j);
+                    return false;
+                }
+            }
+        }
+        //if no errors are found return true to submit form
+        return true;
+    }
+</script>
+</body>
+</html>
+

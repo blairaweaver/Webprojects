@@ -1,0 +1,62 @@
+/* header format */
+h1 {
+    background: black;
+    text-align: center;
+    color: white;
+}
+
+/* general table format */
+table, td, th {
+
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+/* general table header format */
+th {
+    background: lightgray;
+}
+
+/* overview table format */
+#overview {
+    margin-right: 0px;
+    margin-left: auto;
+    width: 350px;
+
+}
+
+/* Table format for order total table*/
+#ordertotal {
+    margin-right: 0px;
+    margin-left: auto;
+    width: 350px;
+}
+
+/*Right justify items of overtd class. In overview and ordertotal tables*/
+.overtd {
+    text-align: right;
+}
+
+
+/* order table format */
+#order {
+    width: 100%;
+    text-align: center;
+}
+
+/*Widths of columns in the form table*/
+th[name="quantity"],th[name="unit"],th[name="price"]{
+    width: 10%;
+}
+
+th[name="delete"]{
+    width: 4%;
+}
+
+th[name="item"]{
+    width: 25%;
+}
+
+th[name="description"]{
+    width: 37%;
+}
